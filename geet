@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>For Geet</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+margin:0;
+display:flex;
+align-items:center;
+justify-content:center;
+background:
+radial-gradient(1200px 600px at 50% -10%, #3b2433, #0b0b10 55%);
+font-family:Inter,system-ui,-apple-system,sans-serif;
+color:#eee;
+overflow:hidden;
+}
+
+/* ===== subtle ambient particles ===== */
+.dot{
+position:absolute;width:2px;height:2px;border-radius:50%;
+background:rgba(255,255,255,.5);
+animation:rise linear infinite;
+}
+@keyframes rise{
+from{transform:translateY(110vh);opacity:0}
+50%{opacity:.9}
+to{transform:translateY(-10vh);opacity:0}
+}
+
+/* ===== love burst ===== */
+.heart{
+position:absolute;font-size:18px;pointer-events:none;
+animation:heart 900ms ease forwards;
+filter:drop-shadow(0 8px 16px rgba(255,79,139,.5));
+}
+@keyframes heart{
+0%{transform:translate(-50%,-50%) scale(.6);opacity:0}
+30%{opacity:1}
+100%{transform:translate(-50%,-120%) scale(1.2);opacity:0}
+}
+
+/* ===== card ===== */
+.card{
+width:min(92vw,380px);
+padding:36px 34px;
+border-radius:28px;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(22px);
+box-shadow:
+0 40px 90px rgba(0,0,0,.65),
+inset 0 0 0 1px rgba(255,255,255,.08);
+animation:enter .9s cubic-bezier(.2,.8,.2,1);
+text-align:center;
+}
+@keyframes enter{
+from{opacity:0;transform:translateY(26px) scale(.96)}
+to{opacity:1;transform:none}
+}
+
+/* slide animation on step change */
+.slide-in{
+animation:slide .7s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes slide{
+from{opacity:0;transform:translateX(22px)}
+to{opacity:1;transform:none}
+}
+
+h2{
+font-family:"Playfair Display",serif;
+margin:0 0 12px;
+color:#ffd6e6;
+}
+p{font-size:15px;line-height:1.7;color:#ddd}
+
+.btn{
+margin-top:22px;
+padding:12px 30px;border:none;border-radius:999px;
+font-size:14px;letter-spacing:.3px;cursor:pointer;
+transition:.3s;
+}
+.primary{
+background:linear-gradient(135deg,#ff4f8b,#ff9fbf);
+color:#121212;
+box-shadow:0 14px 36px rgba(255,79,139,.45);
+}
+.primary:hover{transform:translateY(-2px)}
+.ghost{
+background:transparent;border:1px solid rgba(255,255,255,.28);
+color:#eee;margin-left:10px;position:relative;
+}
+
+/* password */
+.input{
+width:100%;
+margin-top:14px;
+padding:12px 14px;border-radius:14px;
+border:1px solid rgba(255,255,255,.25);
+background:rgba(0,0,0,.2);color:#fff;
+outline:none;
+}
+.hint{font-size:12px;color:#aaa;margin-top:8px}
+
+.signature{
+margin-top:26px;
+font-family:"Playfair Display",serif;
+font-size:17px;color:#ff9fbf;
+}
+
+/* swipe hint */
+.swipe{
+position:fixed;bottom:14px;left:50%;
+transform:translateX(-50%);
+font-size:12px;color:#bbb;opacity:.8;
+}
+</style>
+</head>
+
+<body>
+
+<div id="card" class="card"></div>
+<div class="swipe">Swipe / Click to continue</div>
+
+<script>
+/* ===== ambient dots ===== */
+for(let i=0;i<42;i++){
+ const d=document.createElement('div');
+ d.className='dot';
+ d.style.left=Math.random()*100+'vw';
+ d.style.animationDuration=(6+Math.random()*10)+'s';
+ d.style.animationDelay=Math.random()*5+'s';
+ document.body.appendChild(d);
+}
+
+/* ===== love effects on every slide ===== */
+function loveBurst(x=window.innerWidth/2,y=window.innerHeight/2){
+ for(let i=0;i<7;i++){
+  const h=document.createElement('div');
+  h.className='heart';
+  h.textContent=['💖','💘','💗'][Math.floor(Math.random()*3)];
+  h.style.left=(x+(Math.random()*60-30))+'px';
+  h.style.top=(y+(Math.random()*20-10))+'px';
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),900);
+ }
+}
+
+/* ===== content ===== */
+let step=0;
+const card=document.getElementById('card');
+
+const scenes=[
+/* PASSWORD */
+`
+<h2>Before we begin</h2>
+<p><b>Question:</b><br>Sunny ko sabse jyaada khaane me kya pasand hai?</p>
+<input id="ans" class="input" placeholder="Your answer…" />
+<div class="hint">Hint: ek dish 😌</div>
+<button class="btn primary" onclick="check()">Unlock</button>
+`,
+/* 1 */
+`
+<h2>Hello Geet</h2>
+<p>
+This isn’t a question.<br>
+It’s a moment I wanted to create — slowly.
+</p>
+<button class="btn primary" onclick="next()">Continue</button>
+`,
+/* 2 */
+`
+<h2>The First Memory</h2>
+<p>
+Dwarka Sector 21.<br>
+Christmas lights. Winter air.<br><br>
+That quiet realization — <i>this feels different.</i>
+</p>
+<button class="btn primary" onclick="next()">Continue</button>
+`,
+/* 3 */
+`
+<h2>The Journey</h2>
+<p>
+Rishikesh. Mussoorie.<br>
+Roads, silence, conversations.<br><br>
+Everything felt lighter with you.
+</p>
+<button class="btn primary" onclick="next()">Continue</button>
+`,
+/* 4 */
+`
+<h2>The Moment</h2>
+<p>
+Krishna Janmabhoomi.<br>
+I didn’t ask for signs.<br>
+I already had one.
+</p>
+<button class="btn primary" onclick="next()">One last thing</button>
+`,
+/* 5 */
+`
+<h2>Geet</h2>
+<p style="font-size:17px">
+Would you like to be<br>my Valentine?
+</p>
+<button class="btn primary" onclick="yes()">Yes</button>
+<button class="btn ghost" onmouseover="evade(this)">No</button>
+`
+];
+
+function render(i,evt){
+ card.classList.remove('slide-in');
+ void card.offsetWidth;
+ card.classList.add('slide-in');
+ card.innerHTML=scenes[i];
+ loveBurst(evt?.clientX,evt?.clientY);
+}
+
+function check(){
+ const v=(document.getElementById('ans').value||'')
+  .trim().toLowerCase();
+ if(v==='biryani'){
+  step=1; render(step);
+ }else{
+  loveBurst();
+  alert('Wrong 😌 Try again.');
+ }
+}
+
+function next(evt){ render(++step,evt); }
+
+function yes(){
+ render(step);
+ card.innerHTML=`
+ <h2>Thank you</h2>
+ <p>
+ Not for saying yes.<br>
+ But for making every place feel like it mattered.
+ </p>
+ <div class="signature">— Sunny</div>
+ `;
+}
+
+/* playful no */
+function evade(btn){
+ btn.style.left=(Math.random()*120-60)+'px';
+ btn.style.top=(Math.random()*60-30)+'px';
+ loveBurst();
+}
+
+/* ===== swipe support ===== */
+let sx=0, sy=0;
+window.addEventListener('touchstart',e=>{
+ sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+});
+window.addEventListener('touchend',e=>{
+ const dx=e.changedTouches[0].clientX-sx;
+ const dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>40 || Math.abs(dy)>40){
+  if(step>0 && step<scenes.length-1) next(e.changedTouches[0]);
+ }
+});
+
+/* click anywhere to advance (after unlock) */
+window.addEventListener('click',e=>{
+ if(step>0 && step<scenes.length-1 && !e.target.closest('button,input')) next(e);
+});
+
+/* init */
+render(0);
+</script>
+</body>
+</html>
